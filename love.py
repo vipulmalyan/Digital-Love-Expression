@@ -97,7 +97,6 @@ elif st.session_state.step == 2:
             st.session_state.step = 3
             st.rerun()
 
-    # ESCAPING + SHRINKING NO BUTTON
     components.html("""
         <style>
         #no-btn {
@@ -109,11 +108,8 @@ elif st.session_state.step == 2:
             border: none;
             border-radius: 50px;
             cursor: pointer;
-
-            /* start away from center */
             top: 75%;
             left: 65%;
-
             transition: all 0.15s ease;
         }
         </style>
@@ -123,7 +119,6 @@ elif st.session_state.step == 2:
         <script>
         const btn = document.getElementById("no-btn");
 
-        // move function
         function moveBtn() {
             const x = Math.random() * (window.innerWidth - 150);
             const y = Math.random() * (window.innerHeight - 100);
@@ -132,7 +127,6 @@ elif st.session_state.step == 2:
             btn.style.top = y + "px";
         }
 
-        // 🔥 move once instantly on load
         moveBtn();
 
         document.addEventListener("mousemove", (e) => {
@@ -144,10 +138,7 @@ elif st.session_state.step == 2:
             );
 
             if (distance < 150) {
-
                 moveBtn();
-
-                // change text only (no shrinking)
                 const texts = ["No 😢", "Are you sure? 😭", "Think again 😏", "Last chance 😳"];
                 btn.innerText = texts[Math.floor(Math.random() * texts.length)];
             }
@@ -155,13 +146,11 @@ elif st.session_state.step == 2:
         </script>
         """, height=300)
 
-  
 # -------------------------
 # STEP 3 (CELEBRATION)
 # -------------------------
 elif st.session_state.step == 3:
 
-    # 🎉 Effects
     confetti(emojis=["💖", "❤️", "💕", "💘"])
     st.balloons()
 
@@ -175,45 +164,133 @@ elif st.session_state.step == 3:
     # 🎥 VIDEO
     video_path = "assets/video.mp4"
     if os.path.exists(video_path):
-            components.html(f"""
-                <div style="display:flex; justify-content:center;">
-                    <video width="320" autoplay controls>
-                        <source src="{video_path}" type="video/mp4">
-                    </video>
-                </div>
-                """, height=250)
+        components.html(f"""
+            <div style="display:flex; justify-content:center;">
+                <video width="320" autoplay controls>
+                    <source src="{video_path}" type="video/mp4">
+                </video>
+            </div>
+            """, height=250)
 
-    # 💖 Title
     st.markdown(
         "<h3 style='text-align: center;'>💞 Muaaah! I love you, my cutiepotato 💞</h3>",
         unsafe_allow_html=True
     )
 
     # -------------------------
-    # BUILD GIF LIST (ONLY ONCE)
+    # 🚀 UPDATED GIF LOADING (FAST)
     # -------------------------
     gifs = []
 
     for i in range(1, 10):
         gif_path = f"assets/{i}.gif"
         if os.path.exists(gif_path):
-            with open(gif_path, "rb") as f:
-                b64 = base64.b64encode(f.read()).decode()
-                gifs.append(f"data:image/gif;base64,{b64}")
+            gifs.append(gif_path)
 
     # -------------------------
-    # RENDER SLIDESHOW (ONLY ONCE)
+    # SLIDESHOW
     # -------------------------
+    # components.html(f"""
+    # <div style="display:flex; justify-content:center;">
+    #     <img id="slideshow" style="
+    #         width:350px;
+    #         height:350px;
+    #         object-fit:cover;
+    #         border-radius:15px;
+    #         box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    #         transition: opacity 0.5s;
+    #     ">
+    # </div>
+
+    # <script>
+    # const gifs = {gifs};
+    # let index = 0;
+    # const img = document.getElementById("slideshow");
+
+    # function showNextGif() {{
+    #     img.style.opacity = 0;
+
+    #     setTimeout(() => {{
+    #         img.src = gifs[index];
+    #         img.style.opacity = 1;
+    #         index = (index + 1) % gifs.length;
+    #     }}, 200);
+    # }}
+
+    # setInterval(showNextGif, 2000);
+
+    # // 🔥 show first instantly
+    # if (gifs.length > 0) {{
+    #     img.src = gifs[0];
+    # }}
+
+    # </script>
+    # """, height=400)
+
+    # st.markdown("""
+    #     <hr style="margin-top:5px;">
+    #     <div style='
+    #         text-align: center;
+    #         color: white;
+    #         opacity: 0.8;
+    #         font-size: 14px;
+    #         animation: fadeIn 2s ease-in;
+    #     '>
+    #         Made with ❤️ by <b>your favourite - Vipul Malyan</b>
+    #     </div>
+
+    #     <style>
+    #     @keyframes fadeIn {
+    #         from {opacity: 0;}
+    #         to {opacity: 0.8;}
+    #     }
+    #     </style>
+    #     """, unsafe_allow_html=True)
+
+ # -------------------------
+# 🚀 STREAMLIT GIF SLIDESHOW (WORKING)
+# -------------------------
+
+    # -------------------------
+    # 🚀 PERFECT GIF SLIDESHOW (FAST + SMOOTH + CENTERED)
+    # -------------------------
+    @st.cache_data
+    def load_gifs():
+        gifs = []
+        for i in range(1, 10):
+            path = f"assets/{i}.gif"
+            if os.path.exists(path):
+                with open(path, "rb") as f:
+                    b64 = base64.b64encode(f.read()).decode()
+                    gifs.append(f"data:image/gif;base64,{b64}")
+        return gifs
+
+    gifs = load_gifs()
+
     components.html(f"""
-    <div style="display:flex; justify-content:center;">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+
         <img id="slideshow" style="
             width:350px;
             height:350px;
             object-fit:cover;
             border-radius:15px;
             box-shadow:0 8px 20px rgba(0,0,0,0.2);
-            transition: opacity 0.5s;
+            transition: opacity 0.6s ease-in-out;
         ">
+
+        <hr style="width:60%; margin-top:20px; opacity:0.3;">
+
+        <div style="
+            text-align:center;
+            color:white;
+            opacity:0.85;
+            font-size:14px;
+            margin-top:10px;
+        ">
+            Made with ❤️ by <b>your favourite - Vipul Malyan</b>
+        </div>
+
     </div>
 
     <script>
@@ -228,50 +305,31 @@ elif st.session_state.step == 3:
             img.src = gifs[index];
             img.style.opacity = 1;
             index = (index + 1) % gifs.length;
-        }}, 200);
+        }}, 300);
     }}
 
+    // preload first
+    if (gifs.length > 0) {{
+        img.src = gifs[0];
+    }}
+
+    // smooth loop
     setInterval(showNextGif, 2000);
-    showNextGif();
     </script>
-    """, height=400)
+    """, height=500)
 
-
-    st.markdown("""
-        <hr style="margin-top:5px;">
-
-        <div style='
-            text-align: center;
-            color: white;
-            opacity: 0.8;
-            font-size: 14px;
-            animation: fadeIn 2s ease-in;
-        '>
-            Made with ❤️ by <b>your favourite - Vipul Malyan</b>
-        </div>
-
-        <style>
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 0.8;}
-        }
-        </style>
-        """, unsafe_allow_html=True)
-            
+# -------------------------
+# FINAL LAYOUT FIX
+# -------------------------
 st.markdown("""
 <style>
-/* Allow layout to breathe but remove ugly scroll */
 html, body {
     overflow-x: hidden;
 }
-
-/* Reduce top padding (THIS is the real issue) */
 .block-container {
     padding-top: 2rem !important;
     padding-bottom: 1rem !important;
 }
-
-/* Keep things centered */
 section.main > div {
     display: flex;
     flex-direction: column;
@@ -280,4 +338,3 @@ section.main > div {
 }
 </style>
 """, unsafe_allow_html=True)
-
