@@ -51,7 +51,7 @@ body {
     padding: 12px 30px;
 }
 
-/* GIF Styling */
+/* IMAGE Styling */
 .gif-container {
     display: flex;
     justify-content: center;
@@ -97,7 +97,6 @@ elif st.session_state.step == 2:
             st.session_state.step = 3
             st.rerun()
 
-    # ESCAPING + SHRINKING NO BUTTON
     components.html("""
         <style>
         #no-btn {
@@ -109,11 +108,8 @@ elif st.session_state.step == 2:
             border: none;
             border-radius: 50px;
             cursor: pointer;
-
-            /* start away from center */
             top: 75%;
             left: 65%;
-
             transition: all 0.15s ease;
         }
         </style>
@@ -123,31 +119,24 @@ elif st.session_state.step == 2:
         <script>
         const btn = document.getElementById("no-btn");
 
-        // move function
         function moveBtn() {
             const x = Math.random() * (window.innerWidth - 150);
             const y = Math.random() * (window.innerHeight - 100);
-
             btn.style.left = x + "px";
             btn.style.top = y + "px";
         }
 
-        // 🔥 move once instantly on load
         moveBtn();
 
         document.addEventListener("mousemove", (e) => {
             const rect = btn.getBoundingClientRect();
-
             const distance = Math.hypot(
                 e.clientX - rect.left,
                 e.clientY - rect.top
             );
 
             if (distance < 150) {
-
                 moveBtn();
-
-                // change text only (no shrinking)
                 const texts = ["No 😢", "Are you sure? 😭", "Think again 😏", "Last chance 😳"];
                 btn.innerText = texts[Math.floor(Math.random() * texts.length)];
             }
@@ -155,55 +144,47 @@ elif st.session_state.step == 2:
         </script>
         """, height=300)
 
-  
 # -------------------------
 # STEP 3 (CELEBRATION)
 # -------------------------
 elif st.session_state.step == 3:
 
-    # 🎉 Effects
     confetti(emojis=["💖", "❤️", "💕", "💘"])
     st.balloons()
 
     st.markdown("<div class='big-text'>YAAAYYY 💖💖💖</div>", unsafe_allow_html=True)
 
-    # 🎵 AUDIO
     audio_path = "assets/audio.mp3"
     if os.path.exists(audio_path):
         autoplay_audio(audio_path)
 
-    # 🎥 VIDEO
     video_path = "assets/video.mp4"
     if os.path.exists(video_path):
-            components.html(f"""
-                <div style="display:flex; justify-content:center;">
-                    <video width="320" autoplay controls>
-                        <source src="{video_path}" type="video/mp4">
-                    </video>
-                </div>
-                """, height=250)
+        components.html(f"""
+            <div style="display:flex; justify-content:center;">
+                <video width="320" autoplay controls>
+                    <source src="{video_path}" type="video/mp4">
+                </video>
+            </div>
+            """, height=250)
 
-    # 💖 Title
     st.markdown(
         "<h3 style='text-align: center;'>💞 Muaaah! I love you, my cutiepotato 💞</h3>",
         unsafe_allow_html=True
     )
 
     # -------------------------
-    # BUILD GIF LIST (ONLY ONCE)
+    # PNG SLIDESHOW (FAST ⚡)
     # -------------------------
-    gifs = []
+    images = []
 
-    for i in range(1, 10):
-        gif_path = f"assets/{i}.gif"
-        if os.path.exists(gif_path):
-            with open(gif_path, "rb") as f:
+    for i in range(2, 6):
+        img_path = f"assets/{i}.png"
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
                 b64 = base64.b64encode(f.read()).decode()
-                gifs.append(f"data:image/gif;base64,{b64}")
+                images.append(f"data:image/png;base64,{b64}")
 
-    # -------------------------
-    # RENDER SLIDESHOW (ONLY ONCE)
-    # -------------------------
     components.html(f"""
     <div style="display:flex; justify-content:center;">
         <img id="slideshow" style="
@@ -212,30 +193,30 @@ elif st.session_state.step == 3:
             object-fit:cover;
             border-radius:15px;
             box-shadow:0 8px 20px rgba(0,0,0,0.2);
-            transition: opacity 0.5s;
+            opacity:1;
+            transition: opacity 0.8s ease-in-out;
         ">
     </div>
 
     <script>
-    const gifs = {gifs};
-    let index = 0;
+    const images = {images};
+    let index = 1;
     const img = document.getElementById("slideshow");
 
-    function showNextGif() {{
+    function showNextImage() {{
         img.style.opacity = 0;
 
         setTimeout(() => {{
-            img.src = gifs[index];
+            img.src = images[index];
             img.style.opacity = 1;
-            index = (index + 1) % gifs.length;
-        }}, 200);
+            index = (index + 1) % images.length;
+        }}, 800);
     }}
 
-    setInterval(showNextGif, 2000);
-    showNextGif();
+    img.src = images[0];
+    setInterval(showNextImage, 2500);
     </script>
     """, height=400)
-
 
     st.markdown("""
         <hr style="margin-top:5px;">
@@ -257,21 +238,18 @@ elif st.session_state.step == 3:
         }
         </style>
         """, unsafe_allow_html=True)
-            
+
 st.markdown("""
 <style>
-/* Allow layout to breathe but remove ugly scroll */
 html, body {
     overflow-x: hidden;
 }
 
-/* Reduce top padding (THIS is the real issue) */
 .block-container {
     padding-top: 2rem !important;
     padding-bottom: 1rem !important;
 }
 
-/* Keep things centered */
 section.main > div {
     display: flex;
     flex-direction: column;
@@ -280,4 +258,3 @@ section.main > div {
 }
 </style>
 """, unsafe_allow_html=True)
-
